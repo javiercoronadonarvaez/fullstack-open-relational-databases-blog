@@ -1,9 +1,11 @@
+const bcrypt = require("bcrypt");
 const router = require("express").Router();
 
 const { User, Blog } = require("../models");
 
 router.get("/", async (req, res) => {
   const users = await User.findAll({
+    attributes: { exclude: ["passwordHash"] },
     include: {
       model: Blog,
       attributes: { exclude: ["userId"] },
@@ -12,9 +14,26 @@ router.get("/", async (req, res) => {
   res.json(users);
 });
 
-router.post("/", async (req, res) => {
-  const user = await User.create(req.body);
-  res.json(user);
+// router.post("/", async (req, res) => {
+//   const user = await User.create(req.body);
+//   res.json(user);
+// });
+
+router.post("/", async (request, response) => {
+  const { username, name, password } = request.body;
+
+  const saltRounds = 10;
+  const passwordHash = await bcrypt.hash(password, saltRounds);
+
+  const user = await User.create({
+    username,
+    name,
+    passwordHash,
+  });
+
+  const savedUser = await user.save();
+
+  response.status(201).json(savedUser);
 });
 
 router.put("/:username", async (req, res) => {
@@ -40,6 +59,12 @@ router.get("/:id", async (req, res) => {
   } else {
     res.status(404).end();
   }
+});
+
+router.delete("/:id", async (req, res) => {
+  const user = await User.findByPk(req.params.id);
+  await user.destroy();
+  return res.json(user).status(204).end();
 });
 
 module.exports = router;
