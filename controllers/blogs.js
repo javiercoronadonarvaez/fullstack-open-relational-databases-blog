@@ -5,7 +5,7 @@ const { Blog, User } = require("../models");
 
 router.get("/", async (req, res) => {
   const blogs = await Blog.findAll({
-    attributes: { exclude: ["userId"] },
+    //attributes: { exclude: ["userId"] },
     include: {
       model: User,
       attributes: ["name"],
@@ -41,6 +41,7 @@ router.delete("/:id", tokenExtractor, blogFinder, async (req, res) => {
     await req.blog.destroy();
     return res.json(req.blog).status(204).end();
   }
+
   res
     .status(400)
     .send({ error: "Only the user who created the blog can delete it" });
