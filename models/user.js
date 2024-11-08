@@ -25,7 +25,7 @@ User.init(
     },
     passwordHash: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
     },
   },
   {
