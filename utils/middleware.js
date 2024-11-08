@@ -39,13 +39,8 @@ const errorHandler = (error, request, response, next) => {
   } else if (error.name === "SequelizeDatabaseError") {
     const dbErrorMessage = error.parent.message;
     return response.status(400).json({ error: dbErrorMessage });
-  } else if (
-    error.name === "MongoServerError" &&
-    error.message.includes("E11000 duplicate key error")
-  ) {
-    return response
-      .status(400)
-      .json({ error: "expected `username` to be unique" });
+  } else if (error.name === "TypeError") {
+    return response.status(400).json({ error: "Blog key inexistent" });
   } else if (error.name === "JsonWebTokenError") {
     return response.status(401).json({ error: "token invalid" });
   } else if (error.name === "TokenExpiredError") {

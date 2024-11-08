@@ -33,12 +33,17 @@ router.get("/:id", blogFinder, async (req, res) => {
   }
 });
 
-router.delete("/:id", blogFinder, async (req, res) => {
-  if (req.blog) {
+router.delete("/:id", tokenExtractor, blogFinder, async (req, res) => {
+  const user = await User.findByPk(req.decodedToken.id);
+  //   console.log("DECODED USER", user);
+  //   console.log("Requested Blog", req.blog);
+  if (user.dataValues.id === req.blog.dataValues.userId) {
     await req.blog.destroy();
     return res.json(req.blog).status(204).end();
   }
-  res.status(204).end();
+  res
+    .status(400)
+    .send({ error: "Only the user who created the blog can delete it" });
 });
 
 router.put("/:id", blogFinder, async (req, res) => {
