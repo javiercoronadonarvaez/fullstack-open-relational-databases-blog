@@ -24,8 +24,11 @@ User.init(
       allowNull: false,
     },
     passwordHash: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(64),
       allowNull: false,
+      validate: {
+        is: /^[0-9a-f]{64}$/i,
+      },
     },
   },
   {
