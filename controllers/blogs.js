@@ -5,20 +5,6 @@ const { tokenExtractor } = require("../utils/middleware");
 const { Blog, User } = require("../models");
 
 router.get("/", async (req, res) => {
-  // const where = {};
-
-  // if (req.query.search) {
-  //   where.title = {
-  //     [Op.iLike]: `%${req.query.search}%`,
-  //   };
-  // }
-
-  // if (req.query.search) {
-  //   where.author = {
-  //     [Op.iLike]: `%${req.query.search}%`,
-  //   };
-  // }
-
   const searchConditions = [];
 
   if (req.query.search) {
@@ -35,6 +21,7 @@ router.get("/", async (req, res) => {
       attributes: ["name"],
     },
     where: searchConditions.length > 0 ? { [Op.or]: searchConditions } : {},
+    order: [["likes", "DESC"]],
   });
   res.json(blogs);
 });
