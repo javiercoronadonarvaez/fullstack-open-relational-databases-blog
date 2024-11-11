@@ -5,13 +5,27 @@ const { tokenExtractor } = require("../utils/middleware");
 const { Blog, User } = require("../models");
 
 router.get("/", async (req, res) => {
-  const where = {};
+  // const where = {};
+
+  // if (req.query.search) {
+  //   where.title = {
+  //     [Op.iLike]: `%${req.query.search}%`,
+  //   };
+  // }
+
+  // if (req.query.search) {
+  //   where.author = {
+  //     [Op.iLike]: `%${req.query.search}%`,
+  //   };
+  // }
+
+  const searchConditions = [];
 
   if (req.query.search) {
-    where.title = {
-      //[Op.col]: "blog.title",
-      [Op.substring]: req.query.search,
-    };
+    searchConditions.push(
+      { title: { [Op.iLike]: `%${req.query.search}%` } },
+      { author: { [Op.iLike]: `%${req.query.search}%` } }
+    );
   }
 
   const blogs = await Blog.findAll({
@@ -20,7 +34,7 @@ router.get("/", async (req, res) => {
       model: User,
       attributes: ["name"],
     },
-    where,
+    where: searchConditions.length > 0 ? { [Op.or]: searchConditions } : {},
   });
   res.json(blogs);
 });
