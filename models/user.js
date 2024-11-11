@@ -27,7 +27,7 @@ User.init(
       type: DataTypes.STRING(64),
       allowNull: false,
       validate: {
-        is: /^[0-9a-f]{64}$/i,
+        is: /^\$2[aby]\$\d{2}\$[./A-Za-z0-9]{53}$/,
       },
     },
   },
