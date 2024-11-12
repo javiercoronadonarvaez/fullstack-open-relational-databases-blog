@@ -11,10 +11,20 @@ List.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    name: {
-      type: DataTypes.TEXT,
+    blogId: {
+      type: DataTypes.INTEGER,
       allowNull: false,
-      unique: true,
+      references: { model: "blogs", key: "id" },
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: { model: "users", key: "id" },
+    },
+    read: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
     },
   },
   {
