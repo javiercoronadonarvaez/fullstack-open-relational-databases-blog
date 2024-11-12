@@ -2,6 +2,8 @@ const jwt = require("jsonwebtoken");
 const logger = require("./logger");
 const { SECRET } = require("../utils/config");
 
+const { Blog } = require("../models");
+
 const requestLogger = (request, response, next) => {
   logger.info("Method:", request.method);
   logger.info("Path:  ", request.path);
@@ -21,6 +23,11 @@ const tokenExtractor = (req, res, next) => {
   } else {
     return res.status(401).json({ error: "token missing" });
   }
+  next();
+};
+
+const blogFinder = async (req, res, next) => {
+  req.blog = await Blog.findByPk(req.params.id);
   next();
 };
 
@@ -57,4 +64,5 @@ module.exports = {
   unknownEndpoint,
   errorHandler,
   tokenExtractor,
+  blogFinder,
 };

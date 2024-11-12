@@ -1,6 +1,6 @@
 const { Op } = require("sequelize");
 const router = require("express").Router();
-const { tokenExtractor } = require("../utils/middleware");
+const { tokenExtractor, blogFinder } = require("../utils/middleware");
 
 const { Blog, User } = require("../models");
 
@@ -32,10 +32,10 @@ router.post("/", tokenExtractor, async (req, res) => {
   res.json(blog);
 });
 
-const blogFinder = async (req, res, next) => {
-  req.blog = await Blog.findByPk(req.params.id);
-  next();
-};
+// const blogFinder = async (req, res, next) => {
+//   req.blog = await Blog.findByPk(req.params.id);
+//   next();
+// };
 
 router.get("/:id", blogFinder, async (req, res) => {
   if (req.blog) {
