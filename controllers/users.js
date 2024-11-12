@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 const router = require("express").Router();
 const { tokenExtractor } = require("../utils/middleware");
 
-const { User, Blog } = require("../models");
+const { User, Blog, List } = require("../models");
 
 router.get("/", async (req, res) => {
   const users = await User.findAll({
@@ -80,8 +80,38 @@ router.put("/:username", tokenExtractor, isAdmin, async (req, res) => {
 //   }
 // });
 
+// router.get("/:id", async (req, res) => {
+//   const user = await User.findByPk(req.params.id);
+//   if (user) {
+//     res.json(user);
+//   } else {
+//     res.status(404).end();
+//   }
+// });
+
 router.get("/:id", async (req, res) => {
-  const user = await User.findByPk(req.params.id);
+  const user = await User.findByPk(req.params.id, {
+    include: [
+      {
+        model: Blog,
+        attributes: { exclude: ["createdAt", "updatedAt"] },
+        through: {
+          attributes: ["id", "read"],
+        },
+      },
+    ],
+    attributes: {
+      exclude: [
+        "id",
+        "admin",
+        "disabled",
+        "passwordHash",
+        "createdAt",
+        "updatedAt",
+      ],
+    },
+  });
+
   if (user) {
     res.json(user);
   } else {
