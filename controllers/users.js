@@ -62,6 +62,24 @@ router.put("/:username", tokenExtractor, isAdmin, async (req, res) => {
   }
 });
 
+// router.put("/:username", async (req, res) => {
+//   const user = await User.findOne({
+//     where: {
+//       username: req.params.username,
+//     },
+//   });
+//   if (user) {
+//     const body = req.body;
+//     // user.username = body.username;
+//     // user.disabled = body.disabled;
+//     user.admin = body.admin;
+//     await user.save();
+//     res.json(user);
+//   } else {
+//     res.status(404).end();
+//   }
+// });
+
 router.get("/:id", async (req, res) => {
   const user = await User.findByPk(req.params.id);
   if (user) {
