@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const router = require("express").Router();
+const { tokenExtractor } = require("../utils/middleware");
 
 const { User, Blog } = require("../models");
 
@@ -36,7 +37,15 @@ router.post("/", async (request, response) => {
   response.status(201).json(savedUser);
 });
 
-router.put("/:username", async (req, res) => {
+const isAdmin = async (req, res, next) => {
+  const user = await User.findByPk(req.decodedToken.id);
+  if (!user.admin) {
+    return res.status(401).json({ error: "operation not allowed" });
+  }
+  next();
+};
+
+router.put("/:username", tokenExtractor, isAdmin, async (req, res) => {
   const user = await User.findOne({
     where: {
       username: req.params.username,
@@ -45,6 +54,7 @@ router.put("/:username", async (req, res) => {
   if (user) {
     const body = req.body;
     user.username = body.username;
+    user.disabled = body.disabled;
     await user.save();
     res.json(user);
   } else {

@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "migration:down": "node utils/rollback.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",

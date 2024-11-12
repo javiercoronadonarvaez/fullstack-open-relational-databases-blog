@@ -23,6 +23,18 @@ module.exports = {
         type: DataTypes.INTEGER,
         defaultValue: 0,
       },
+      year: {
+        type: DataTypes.INTEGER,
+        validate: {
+          isInt: true,
+          minYear(value) {
+            const currentYear = new Date().getFullYear();
+            if (value < 1991 || value > currentYear) {
+              throw new Error(`Year must be between 1991 and ${currentYear}`);
+            }
+          },
+        },
+      },
       created_at: {
         type: DataTypes.DATE, // Use DATE for timestamp
         allowNull: false,

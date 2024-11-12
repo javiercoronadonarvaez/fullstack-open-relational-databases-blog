@@ -12,6 +12,7 @@ router.get("/", async (req, res) => {
         "title",
         "likes",
         "userId",
+        "year",
         "createdAt",
         "updatedAt",
       ],
