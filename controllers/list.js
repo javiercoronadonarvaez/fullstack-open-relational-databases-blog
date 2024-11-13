@@ -3,9 +3,14 @@ const { tokenExtractor } = require("../utils/middleware");
 
 const { User, List } = require("../models");
 
+router.get("/", async (req, res) => {
+  const lists = await List.findAll();
+  res.json(lists);
+});
+
 router.post("/", async (req, res) => {
-  const blog = await List.create({ ...req.body });
-  res.json(blog);
+  const list = await List.create({ ...req.body });
+  res.json(list);
 });
 
 router.put("/:id", tokenExtractor, async (req, res) => {
@@ -23,7 +28,8 @@ router.put("/:id", tokenExtractor, async (req, res) => {
   }
 
   res.status(404).send({
-    error: "Only the user who created the blog can mark it as read or unread",
+    error:
+      "Only the user who added the blog to the list can mark it as read or unread",
   });
 });
 

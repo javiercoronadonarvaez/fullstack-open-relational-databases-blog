@@ -61,9 +61,30 @@ router.get("/:id", blogFinder, async (req, res) => {
 });
 
 router.delete("/:id", tokenExtractor, blogFinder, async (req, res) => {
-  const user = await User.findByPk(req.decodedToken.id);
+  //const user = await User.findByPk(req.decodedToken.id);
   //   console.log("DECODED USER", user);
   //   console.log("Requested Blog", req.blog);
+  console.log("CURRENT TOKEN", req.token);
+  const user = await User.findByPk(req.decodedToken.id);
+  if (user.disabled) {
+    return res.status(401).json({
+      error: "account disabled, please contact admin",
+    });
+  }
+
+  const session = await Session.findOne({
+    where: { userId: user.dataValues.id, token: req.token, active: true },
+    order: [["updatedAt", "DESC"]],
+  });
+
+  console.log("Session Info", session);
+
+  if (!session || !session.active) {
+    return res.status(401).json({
+      error: "Session inactive. Please log in with a valid token",
+    });
+  }
+
   if (user.dataValues.id === req.blog.dataValues.userId) {
     await req.blog.destroy();
     return res.json(req.blog).status(204).end();
