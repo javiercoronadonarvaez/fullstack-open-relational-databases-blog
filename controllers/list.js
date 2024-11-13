@@ -17,16 +17,14 @@ router.put("/:id", tokenExtractor, async (req, res) => {
     // console.log("User", user);
     // console.log("List", list);
     const read = req.body.read;
-    list.dataValues.read = read;
+    list.read = read;
     await list.save();
     return res.json(list).status(204).end();
   }
 
-  res
-    .status(404)
-    .send({
-      error: "Only the user who created the blog can mark it as read or unread",
-    });
+  res.status(404).send({
+    error: "Only the user who created the blog can mark it as read or unread",
+  });
 });
 
 module.exports = router;

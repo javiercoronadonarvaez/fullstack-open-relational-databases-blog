@@ -90,6 +90,15 @@ router.put("/:username", tokenExtractor, isAdmin, async (req, res) => {
 // });
 
 router.get("/:id", async (req, res) => {
+  const where = {};
+
+  if (req.query.read) {
+    console.log("READ Detected", req.query.read);
+    where.read = req.query.read;
+  }
+
+  console.log("WHERE READ", where);
+
   const user = await User.findByPk(req.params.id, {
     include: [
       {
@@ -97,6 +106,7 @@ router.get("/:id", async (req, res) => {
         attributes: { exclude: ["createdAt", "updatedAt"] },
         through: {
           attributes: ["id", "read"],
+          where,
         },
       },
     ],
