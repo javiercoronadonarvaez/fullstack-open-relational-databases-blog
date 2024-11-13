@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const router = require("express").Router();
 
 const { SECRET } = require("../utils/config");
-const User = require("../models/user");
+const { User, Session } = require("../models");
 
 router.post("/", async (request, response) => {
   //const body = request.body;
@@ -39,6 +39,12 @@ router.post("/", async (request, response) => {
   };
 
   const token = jwt.sign(userForToken, SECRET);
+
+  // console.log("TOKEN", token);
+  // console.log("USER ID", user.id);
+
+  const session = await Session.create({ token, userId: user.id });
+  console.log("CREATED SESSION", session);
 
   response
     .status(200)

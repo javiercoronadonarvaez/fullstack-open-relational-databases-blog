@@ -16,7 +16,9 @@ const tokenExtractor = (req, res, next) => {
   const authorization = req.get("authorization");
   if (authorization && authorization.toLowerCase().startsWith("bearer ")) {
     try {
-      req.decodedToken = jwt.verify(authorization.substring(7), SECRET);
+      const token = authorization.slice(7);
+      req.decodedToken = jwt.verify(token, SECRET);
+      req.token = token;
     } catch {
       return res.status(401).json({ error: "token invalid" });
     }

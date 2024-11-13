@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 const router = require("express").Router();
 const { tokenExtractor } = require("../utils/middleware");
 
-const { User, Blog, List } = require("../models");
+const { User, Blog } = require("../models");
 
 router.get("/", async (req, res) => {
   const users = await User.findAll({

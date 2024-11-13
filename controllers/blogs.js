@@ -2,7 +2,7 @@ const { Op } = require("sequelize");
 const router = require("express").Router();
 const { tokenExtractor, blogFinder } = require("../utils/middleware");
 
-const { Blog, User } = require("../models");
+const { Blog, User, Session } = require("../models");
 
 router.get("/", async (req, res) => {
   const searchConditions = [];
@@ -27,15 +27,30 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", tokenExtractor, async (req, res) => {
+  console.log("CURRENT TOKEN", req.token);
   const user = await User.findByPk(req.decodedToken.id);
+  if (user.disabled) {
+    return res.status(401).json({
+      error: "account disabled, please contact admin",
+    });
+  }
+
+  const session = await Session.findOne({
+    where: { userId: user.dataValues.id, token: req.token, active: true },
+    order: [["updatedAt", "DESC"]],
+  });
+
+  console.log("Session Info", session);
+
+  if (!session || !session.active) {
+    return res.status(401).json({
+      error: "Session inactive. Please log in with a valid token",
+    });
+  }
+
   const blog = await Blog.create({ ...req.body, userId: user.id });
   res.json(blog);
 });
-
-// const blogFinder = async (req, res, next) => {
-//   req.blog = await Blog.findByPk(req.params.id);
-//   next();
-// };
 
 router.get("/:id", blogFinder, async (req, res) => {
   if (req.blog) {
